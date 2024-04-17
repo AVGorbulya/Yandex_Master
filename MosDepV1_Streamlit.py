@@ -230,25 +230,25 @@ def check_duplicates(df, exclude_columns=None):
 
 # ### Загрузка данных
 
-# In[156]:
+# In[157]:
 
 
 # загрузим данные из файла excel
 
-#try:
-url = 'https://raw.githubusercontent.com/AVGorbulya/Yandex_Master/main/data.xlsx'
-response = requests.get(url)
-data = response.content
-all_sheets_dict = pd.read_excel(BytesIO(data), sheet_name=None, skiprows=1)
-for sheet_name, df in all_sheets_dict.items():
-    print(f"Лист: {sheet_name}")
+try:
+    url = 'https://raw.githubusercontent.com/AVGorbulya/Yandex_Master/main/data.xlsx'
+    response = requests.get(url)
+    data = response.content
+    all_sheets_dict = pd.read_excel(BytesIO(data), sheet_name=None, skiprows=1)
+    for sheet_name, df in all_sheets_dict.items():
+        print(f"Лист: {sheet_name}")
 
-#except:
-#    pass
-    #file_path = 'C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/data.xlsx'
-    #all_sheets_dict = pd.read_excel(file_path, sheet_name=None, skiprows=1)
-    #for sheet_name, df in all_sheets_dict.items():
-    #    print(f"Лист: {sheet_name}")  
+except:
+    #    pass
+    file_path = 'C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/data.xlsx'
+    all_sheets_dict = pd.read_excel(file_path, sheet_name=None, skiprows=1)
+    for sheet_name, df in all_sheets_dict.items():
+        print(f"Лист: {sheet_name}")  
 
 
 # In[152]:
@@ -738,7 +738,7 @@ df_total.info()
 
 
 # здесь и далее строки st. для выгрузки графиков, комментариев к ним в Streamlit
-st.title('Анализ результатов мониторинга земельных участков на территории города Москвы"')
+st.title('Анализ результатов мониторинга земельных участков на территории города Москвы')
 st.subheader('Цель исследования:')
 st.subheader('Подготовить анализ данных о проверках, проведенных с 01.2023 по 03.2024 г., направленных выявление незаконных строительных объектов, с визуализацией информации по объектам, количеству проведенных мероприятий и их результатах.')
 
@@ -1967,7 +1967,7 @@ st.plotly_chart(fig)
 # In[119]:
 
 
-st.subheader('Рекомендации части обеспечения качества и непротиворечивости данных')
+st.subheader('Рекомендации в части обеспечения качества и непротиворечивости данных')
 st.write("""
 1. Необходимо унифицировать справочники типов объектов, источников задач, видов нарушений и др.
 2. Исключить ручной ввод дублирующей информации, если она есть в одной из таблиц она должна подтягиваться автоматически.
