@@ -175,7 +175,7 @@
 
 # ## Загрузка первичное исследование, предобработка и дообогащение данных
 
-# In[2]:
+# In[120]:
 
 
 import pandas as pd
@@ -200,6 +200,8 @@ from folium.plugins import MarkerCluster
 import geopandas as gpd
 import matplotlib.colors as mcolors
 from streamlit_folium import folium_static
+import requests
+from io import BytesIO
 
 
 # In[3]:
@@ -228,19 +230,28 @@ def check_duplicates(df, exclude_columns=None):
 
 # ### Загрузка данных
 
-# In[4]:
+# In[128]:
 
 
 # загрузим данные из файла excel
-file_path = 'C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/data.xlsx'
 
-all_sheets_dict = pd.read_excel(file_path, sheet_name=None, skiprows=1)
+try:
+    url = 'https://raw.githubusercontent.com/AVGorbulya/Yandex_Master/main/data.xlsx'
+    response = requests.get(url)
+    data = response.content
+    all_sheets_dict = pd.read_excel(BytesIO(data), sheet_name=None, skiprows=1)
+    for sheet_name, df in all_sheets_dict.items():
+        print(f"Лист: {sheet_name}")
 
-for sheet_name, df in all_sheets_dict.items():
-    print(f"Лист: {sheet_name}")
+except:
+    #pass
+    file_path = 'C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/data.xlsx'
+    all_sheets_dict = pd.read_excel(file_path, sheet_name=None, skiprows=1)
+    for sheet_name, df in all_sheets_dict.items():
+        print(f"Лист: {sheet_name}")  
 
 
-# In[5]:
+# In[123]:
 
 
 # сформируем датафреймы
@@ -254,26 +265,19 @@ print()
 print(objects_df.info())
 
 
-# In[6]:
-
-
-# загрузим файл geojson с координатами округов Москвы
-state_geo = 'C:\\Users\\GAV\\Desktop\\Study\\BA\\PythonScripts\\Datasets\\ao.geojson'
-
-
-# In[7]:
-
-
-# загрузим файл geojson с координатами районов Москвы
-state_geo_mo = 'C:\\Users\\GAV\\Desktop\\Study\\BA\\PythonScripts\\Datasets\\geo_mo_disrtict.geojson'
-
-
-# In[8]:
+# In[136]:
 
 
 # загрузим файл с координатами полигонов районов Москвы в формат е exel
-geo_mo_mod = pd.read_excel('C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/geo_mo_mod.xlsx')
-geo_mo_mod.info()
+try:
+    url = 'https://raw.githubusercontent.com/AVGorbulya/Yandex_Master/main/geo_mo_mod.xlsx'
+    response = requests.get(url)
+    data = response.content
+    geo_mo_mod = pd.read_excel(BytesIO(data))
+    geo_mo_mod.info() 
+except:
+    geo_mo_mod = pd.read_excel('C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/geo_mo_mod.xlsx')
+    geo_mo_mod.info()
 
 
 # Вывод:
@@ -397,7 +401,7 @@ else:
     # Добавление новой строки в DataFrame
     geo_mo_mod_tot = pd.concat([geo_mo_mod_tot, new_data], ignore_index=True)
 
-geo_mo_mod_tot.to_excel('C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/geo_mo_mod_tot.xlsx', index=False)
+#geo_mo_mod_tot.to_excel('C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/geo_mo_mod_tot.xlsx', index=False)
 
 
 #     Вывод:
@@ -408,9 +412,9 @@ geo_mo_mod_tot.to_excel('C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDe
 
 
 # Добавим координаты районов в датафрейм с объектами
-geo_mo_mod_tot.to_excel('C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/geo_mo_mod_tot.xlsx', index=False)
+#geo_mo_mod_tot.to_excel('C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/geo_mo_mod_tot.xlsx', index=False)
 objects_df = objects_df.merge(geo_mo_mod_tot[['city_district', 'lon', 'lat']], left_on='Район', right_on='city_district', how='left')
-objects_df.drop(columns='city_district', inplace=True)
+objects_df.drop(columns ='city_district', inplace=True)
 
 
 # In[16]:
@@ -717,7 +721,7 @@ df_total.info()
 # In[27]:
 
 
-df_total.to_excel('C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/df_total.xlsx', index=False)
+#df_total.to_excel('C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/df_total.xlsx', index=False)
 
 
 # ### Вывод по загрузке предобрадотке данных:
@@ -847,7 +851,7 @@ st.write("""Выводы:
 """)
 
 
-# In[34]:
+# In[138]:
 
 
 # moscow_lat - широта центра Москвы, moscow_lng - долгота центра Москвы
@@ -871,9 +875,16 @@ df_total_map.apply(create_clusters, axis=1)
 
 # загружаем JSON-файл с границами округов Москвы
 
-state_geo_mo = 'C:\\Users\\GAV\\Desktop\\Study\\BA\\PythonScripts\\Datasets\\ao.geojson'
-with open(state_geo_mo, 'r', encoding='utf-8') as file:
-    geo_json_data = json.load(file)
+try:
+    url = 'https://raw.githubusercontent.com/AVGorbulya/Yandex_Master/main/ao.geojson'
+    response = requests.get(url)
+    data = response.content
+    geo_json_data = json.loads(data)  # Используем json.loads для прямой загрузки из байтов
+except Exception as e:
+    print("Ошибка при загрузке с удаленного источника:", e)
+    state_geo_mo = 'C:\\Users\\GAV\\Desktop\\Study\\BA\\PythonScripts\\Datasets\\ao.geojson'
+    with open(state_geo_mo, 'r', encoding='utf-8') as file:
+        geo_json_data = json.load(file)
 
 # создаём хороплет с помощью конструктора Choropleth и добавляем его на карту
 Choropleth(
@@ -1289,19 +1300,28 @@ print(city_district_total_counts.reset_index().head(15
 
 # Прежде чем загрузить данные на карту, сверим ключи районов в geojson и city_district_total_counts
 
-# In[53]:
+# In[143]:
 
 
 # Загрузка GeoJSON файла
-with open('C:\\Users\\GAV\\Desktop\\Study\\BA\\PythonScripts\\Datasets\\mos_map.geojson', 'r', encoding='utf-8') as file:
-    data = json.load(file)
+try:
+    url = 'https://raw.githubusercontent.com/AVGorbulya/Yandex_Master/main/mos_map.geojson'
+    response = requests.get(url)
+    data = response.content
+    geo_json_data = json.loads(data.decode('utf-8'))  # Декодирование данных перед загрузкой
+except Exception as e:
+    print("Ошибка при загрузке с удаленного источника:", e)
+    state_geo_mo = 'C:\\Users\\GAV\\Desktop\\Study\\BA\\PythonScripts\\Datasets\\mos_map.geojson'
+    with open(state_geo_mo, 'r', encoding='utf-8') as file:
+        geo_json_data = json.load(file)
+
 # Извлечение названий округов
-state_geo_city_district = [feature['properties']['NAME'] for feature in data['features']]
+state_geo_city_district = [feature['properties']['NAME'] for feature in geo_json_data['features']]
 
 print(len(state_geo_city_district))
 
 
-# In[54]:
+# In[144]:
 
 
 #проверим совпадение ключей районов в state_geo_city_district файла geo_mo_mod.geojson и city_district_total_counts
@@ -1324,7 +1344,7 @@ st.write("""Выводы:
 """)
 
 
-# In[55]:
+# In[146]:
 
 
 # moscow_lat - широта центра Москвы, moscow_lng - долгота центра Москвы
@@ -1349,9 +1369,16 @@ filtered_df = df_total[df_total['Район'].map(lambda x: x in mapping_dict_mo
 filtered_df.apply(create_clusters, axis=1)
 
 # загружаем JSON-файл с границами округов Москвы
-state_geo_mo = 'C:\\Users\\GAV\\Desktop\\Study\\BA\\PythonScripts\\Datasets\\mos_map.geojson'
-with open(state_geo_mo, 'r', encoding='utf-8') as file:
-    geo_json_data = json.load(file)
+try:
+    url = 'https://raw.githubusercontent.com/AVGorbulya/Yandex_Master/main/mos_map.geojson'
+    response = requests.get(url)
+    data = response.content
+    geo_json_data = json.loads(data)  
+except Exception as e:
+    print("Ошибка при загрузке с удаленного источника:", e)
+    state_geo_mo = 'C:\\Users\\GAV\\Desktop\\Study\\BA\\PythonScripts\\Datasets\\mos_map.geojson'
+    with open(state_geo_mo, 'r', encoding='utf-8') as file:
+        geo_json_data = json.load(file)
 
 # создаём хороплет с помощью конструктора Choropleth и добавляем его на карту
 Choropleth(
@@ -1448,7 +1475,7 @@ st.write("""Выводы:
 """)
 
 
-# In[60]:
+# In[149]:
 
 
 # moscow_lat - широта центра Москвы, moscow_lng - долгота центра Москвы
@@ -1474,9 +1501,16 @@ filtered_df = filtered_df.query('Результат != "Отсутствие с�
 filtered_df.apply(create_clusters, axis=1)
 
 # загружаем JSON-файл с границами округов Москвы
-state_geo_mo = 'C:\\Users\\GAV\\Desktop\\Study\\BA\\PythonScripts\\Datasets\\mos_map.geojson'
-with open(state_geo_mo, 'r', encoding='utf-8') as file:
-    geo_json_data = json.load(file)
+try:
+    url = 'https://raw.githubusercontent.com/AVGorbulya/Yandex_Master/main/mos_map.geojson'
+    response = requests.get(url)
+    data = response.content
+    geo_json_data = json.loads(data)  
+except Exception as e:
+    print("Ошибка при загрузке с удаленного источника:", e)
+    state_geo_mo = 'C:\\Users\\GAV\\Desktop\\Study\\BA\\PythonScripts\\Datasets\\mos_map.geojson'
+    with open(state_geo_mo, 'r', encoding='utf-8') as file:
+        geo_json_data = json.load(file)
 
 # создаём хороплет с помощью конструктора Choropleth и добавляем его на карту
 Choropleth(
@@ -1537,7 +1571,7 @@ st.write("""Выводы:
 """)
 
 
-# In[63]:
+# In[150]:
 
 
 # moscow_lat - широта центра Москвы, moscow_lng - долгота центра Москвы
@@ -1563,9 +1597,16 @@ filtered_df = filtered_df.query('Результат != "Отсутствие с�
 filtered_df.apply(create_clusters, axis=1)
 
 # загружаем JSON-файл с границами округов Москвы
-state_geo_mo = 'C:\\Users\\GAV\\Desktop\\Study\\BA\\PythonScripts\\Datasets\\mos_map.geojson'
-with open(state_geo_mo, 'r', encoding='utf-8') as file:
-    geo_json_data = json.load(file)
+try:
+    url = 'https://raw.githubusercontent.com/AVGorbulya/Yandex_Master/main/mos_map.geojson'
+    response = requests.get(url)
+    data = response.content
+    geo_json_data = json.loads(data)  
+except Exception as e:
+    print("Ошибка при загрузке с удаленного источника:", e)
+    state_geo_mo = 'C:\\Users\\GAV\\Desktop\\Study\\BA\\PythonScripts\\Datasets\\mos_map.geojson'
+    with open(state_geo_mo, 'r', encoding='utf-8') as file:
+        geo_json_data = json.load(file)
 
     
 # создаём хороплет с помощью конструктора Choropleth и добавляем его на карту
