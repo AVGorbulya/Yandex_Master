@@ -230,7 +230,7 @@ def check_duplicates(df, exclude_columns=None):
 
 # ### Загрузка данных
 
-# In[128]:
+# In[151]:
 
 
 # загрузим данные из файла excel
@@ -244,11 +244,11 @@ try:
         print(f"Лист: {sheet_name}")
 
 except:
-    #pass
-    file_path = 'C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/data.xlsx'
-    all_sheets_dict = pd.read_excel(file_path, sheet_name=None, skiprows=1)
-    for sheet_name, df in all_sheets_dict.items():
-        print(f"Лист: {sheet_name}")  
+    pass
+    #file_path = 'C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/data.xlsx'
+    #all_sheets_dict = pd.read_excel(file_path, sheet_name=None, skiprows=1)
+    #for sheet_name, df in all_sheets_dict.items():
+    #    print(f"Лист: {sheet_name}")  
 
 
 # In[123]:
