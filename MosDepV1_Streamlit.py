@@ -230,28 +230,28 @@ def check_duplicates(df, exclude_columns=None):
 
 # ### Загрузка данных
 
-# In[151]:
+# In[156]:
 
 
 # загрузим данные из файла excel
 
-try:
-    url = 'https://raw.githubusercontent.com/AVGorbulya/Yandex_Master/main/data.xlsx'
-    response = requests.get(url)
-    data = response.content
-    all_sheets_dict = pd.read_excel(BytesIO(data), sheet_name=None, skiprows=1)
-    for sheet_name, df in all_sheets_dict.items():
-        print(f"Лист: {sheet_name}")
+#try:
+url = 'https://raw.githubusercontent.com/AVGorbulya/Yandex_Master/main/data.xlsx'
+response = requests.get(url)
+data = response.content
+all_sheets_dict = pd.read_excel(BytesIO(data), sheet_name=None, skiprows=1)
+for sheet_name, df in all_sheets_dict.items():
+    print(f"Лист: {sheet_name}")
 
-except:
-    pass
+#except:
+#    pass
     #file_path = 'C:/Users/GAV/Desktop/Study/BA/PythonScripts/Pets/MoscDep/data.xlsx'
     #all_sheets_dict = pd.read_excel(file_path, sheet_name=None, skiprows=1)
     #for sheet_name, df in all_sheets_dict.items():
     #    print(f"Лист: {sheet_name}")  
 
 
-# In[123]:
+# In[152]:
 
 
 # сформируем датафреймы
