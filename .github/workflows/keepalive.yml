@@ -5,7 +5,7 @@ name: Keep Alive
 
 on:
   schedule:
-    - cron: '*/240 * * * *'
+    - cron: '*/600 * * * *'
 
 permissions:
   contents: read
